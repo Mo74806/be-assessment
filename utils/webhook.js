@@ -4,7 +4,7 @@ dotenv.config({ path: "./config.env" });
 
 module.exports = function WebhookNotify(userWebhook, check, message) {
   axios
-    .post(userwebhook, {
+    .post(userWebhook, {
       checkUrl: check.url,
       checkName: check.name,
       checkId: check._id,

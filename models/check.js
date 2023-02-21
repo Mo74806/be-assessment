@@ -83,7 +83,6 @@ const checkSchema = new mongoose.Schema(
 );
 /*postSave middleware to add the check in user schema*/
 checkSchema.pre("save", function (next) {
-  console.log(this);
   UserModel.findById(this.createdBy).then((user) => {
     user.checks.push(this.id);
     user.save({ validateBeforeSave: false });

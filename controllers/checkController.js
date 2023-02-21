@@ -16,10 +16,8 @@ exports.getCheck = factory.getOne(
   "createdBy"
 );
 exports.createCheck = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const check = await CheckModel.create(req.body);
-  //make the logic of continues check
-  //or make in pre save hook in the check model
+
   // Create the report
   const report = new Report({
     check: check._id,

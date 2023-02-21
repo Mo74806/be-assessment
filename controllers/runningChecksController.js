@@ -9,33 +9,37 @@ const notify = require("../utils/notify");
 // FIXME:
 // //correct the times and the intervals(done)
 
-class CronService {
+class RunningChecksService {
   constructor() {
     this.checkingList = new Map();
     this.sentMailFlag = new Map();
   }
 
-  async sigleUrlCheck(check) {
+  async singleUrlCheck(check) {
     try {
-      const client = axios.create({
-        baseURL: check.url,
-        timeout: check.timeout * 1000,
-      });
-      axiosRetry(client, { retries: check.threshold });
+      let configuration = {};
+      configuration.baseURL = check.url;
+      configuration.method = check.method;
+      configuration.timeout = check.timeout * 1000;
+      if (check.authentication) {
+        configuration.auth = {
+          username: check.authentication.username,
+          password: check.authentication.password,
+        };
+      }
+      const NewInstance = axios.create(configuration);
+      axiosRetry(NewInstance, { retries: check.threshold });
       const startTime = Date.now();
       let date = new Date(startTime);
       console.log(date.toISOString());
-      client
-        .get(check.path)
+      NewInstance.get(check.path)
         .then(async (res) => {
           let endTime = Date.now();
           let responseTime = (endTime - startTime) / 1000;
           let report = await ReportModel.findOne({ check: check._id });
-          // let check = await Check.findById(report.check);
           if (!report) {
             console.log("There is no checks found");
           } else {
-            let log = `Success Status-->GET Code-->  ${res.status} --> ${responseTime}seconds`;
             if (!this.sentMailFlag[check._id]) {
               this.sentMailFlag[check._id] = true;
               notify(
@@ -44,15 +48,16 @@ class CronService {
               );
             }
             let upTime = report.upTime + check.interval / 100;
-            let historyLog = report.history;
-            if (historyLog == null) historyLog = [];
-            historyLog.push(log);
+            let reportLogs = report.history || [];
+            reportLogs.push(
+              `Success Status-->GET Code-->  ${res.status} --> ${responseTime}seconds`
+            );
             let newReport = await ReportModel.findByIdAndUpdate(report._id, {
               status: res.status,
               availability: (upTime / (upTime + report.downTime)) * 100,
               upTime: upTime,
               responseTime: responseTime,
-              history: historyLog,
+              history: reportLogs,
             });
             if (newReport)
               console.log(
@@ -70,21 +75,22 @@ class CronService {
             let downTime = report.downTime + check.interval;
             let outages = report.outages + 1;
             let status = 400;
-            let log = `Fail Status-->GET Code --> ${status} --> ${responseTime}seconds`;
+
             if (this.sentMailFlag[check._id]) {
               this.sentMailFlag[check._id] = false;
               notify(check, `{your check: ${check.name} is getting down now }`);
             }
-            let historyLog = report.history;
-            if (historyLog == null) historyLog = [];
-            historyLog.push(log);
+            let reportLogs = report.history || [];
+            reportLogs.push(
+              `Fail Status-->GET Code --> ${status} --> ${responseTime}seconds`
+            );
             let newReport = await ReportModel.findByIdAndUpdate(report._id, {
               status: status,
-              availability: (report.upTime / (report.upTime + downTime)) * 100,
+              responseTime: responseTime,
               downTime: downTime,
               outages: outages,
-              responseTime: responseTime,
-              history: historyLog,
+              availability: (report.upTime / (report.upTime + downTime)) * 100,
+              history: reportLogs,
             });
             if (newReport)
               console.log(
@@ -103,12 +109,11 @@ class CronService {
   async startContinousChecks() {
     const checks = await Check.find().populate("createdBy");
     checks.forEach((check) => {
-      console.log("sssssssssssssssssssssssssssssssssssssss");
       this.sentMailFlag[check._id] = true;
       this.checkingList[check._id] = cron.schedule(
         `*/${check.interval} * * * * *`,
         () => {
-          if (check) this.sigleUrlCheck(check);
+          if (check) this.singleUrlCheck(check);
         }
       );
     });
@@ -119,7 +124,7 @@ class CronService {
     this.checkingList[check._id] = cron.schedule(
       `*/${check.interval} * * * * *`,
       () => {
-        if (check) this.sigleUrlCheck(check);
+        if (check) this.singleUrlCheck(check);
       }
     );
   }
@@ -129,5 +134,5 @@ class CronService {
   }
 }
 
-const cronService = new CronService();
-module.exports = cronService;
+const runningChecksService = new RunningChecksService();
+module.exports = runningChecksService;

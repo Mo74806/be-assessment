@@ -114,13 +114,10 @@ userSchema.methods.createVerficationOrResetToken = function (verfication) {
   const hasedToken = crypto.createHash("sha256").update(token).digest("hex");
   if (verfication) this.verificationCode = hasedToken;
   else this.passwordResetToken = hasedToken;
-  console.log(this.verificationCode);
   //set the exxpire time for the reset token is 10 MIN after sending to the user
   verfication
     ? (this.VerficationCodeExpiry = Date.now() + 10 * 60 * 1000)
     : (this.PasswordResetExpires = Date.now() + 10 * 60 * 1000);
-  console.log(token);
-  console.log(this);
 
   return token;
 };

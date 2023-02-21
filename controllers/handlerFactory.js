@@ -52,7 +52,6 @@ exports.updateOne = (Model, filters) =>
 exports.createOne = (Model, sendResponse = true) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
-    console.log(req.body);
     if (sendResponse)
       res.status(201).json({
         status: "success",
@@ -68,7 +67,6 @@ exports.getOne = (Model, popOptions, filters) =>
     if (filters)
       query = Model.findOne({ _id: req.params.id, [filters]: req.user.id });
     else query = Model.findById(req.params.id);
-    console.log(query);
     if (popOptions) query = query.populate(popOptions);
     const doc = await query;
 
