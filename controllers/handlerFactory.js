@@ -3,6 +3,10 @@ const AppError = require("./../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 const { query } = require("express");
 
+/*****************************************************************************/
+/* this is a handler factory for all the CRUD operation on a single Resource *
+/*****************************************************************************/
+
 exports.deleteOne = (Model, filters) =>
   catchAsync(async (req, res, next) => {
     let query;

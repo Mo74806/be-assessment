@@ -19,12 +19,12 @@ router
   .route("/")
   .get(
     authController.protect,
-    authController.restrictTo(["admin"]),
+    authController.restrictTo("admin"),
     reportController.getAllReports
   )
   .post(
     authController.protect,
-    authController.restrictTo(["admin"]),
+    authController.restrictTo("admin"),
     reportController.createReport
   );
 
@@ -32,17 +32,17 @@ router
   .route("/:id")
   .get(
     authController.protect,
-    authController.restrictTo(["admin"]),
+    authController.restrictTo("admin"),
     reportController.getReport
   )
   .patch(
     authController.protect,
-    authController.restrictTo(["admin"]),
+    authController.restrictTo("admin"),
     reportController.updateReport
   )
   .delete(
     authController.protect,
-    authController.restrictTo(["admin"]),
+    authController.restrictTo("admin"),
     reportController.deleteReport
   );
 

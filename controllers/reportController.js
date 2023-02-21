@@ -7,6 +7,7 @@ const APIFeatures = require("./../utils/apiFeatures");
 
 exports.sendReport = catchAsync(async (req, res, next) => {
   let checks;
+  //check if getting the report by check tags or check id
   if (req.body.tags) {
     checks = await CheckModel.find({
       createdBy: req.user.id,
@@ -37,7 +38,6 @@ exports.sendReport = catchAsync(async (req, res, next) => {
   });
 });
 exports.createReport = factory.createOne(ReportModel);
-
 exports.updateReport = factory.updateOne(ReportModel);
 exports.getAllReports = factory.getAll(ReportModel);
 exports.getReport = factory.getOne(ReportModel);

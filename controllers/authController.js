@@ -8,6 +8,7 @@ const sendEmail = require("./../utils/email");
 dotenv.config({ path: "./config.env" });
 const crypto = require("crypto");
 
+//creating the jwt token
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -24,10 +25,8 @@ const createSendToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
   res.cookie("jwt", token, cookieOptions);
-
-  // Remove password from output
+  // Remove password from return output
   user.password = undefined;
   user.token = token;
   res.status(statusCode).json({
@@ -40,6 +39,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  //1)create the user
   const newUser = await User.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -74,30 +74,30 @@ exports.verfiyAccount = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ verificationCode: hashedToken });
 
-  //if no user is found
+  //2)if no user is found
   if (!user) {
     return next(new AppError("token is invaild", 400));
   }
-  //set the password
+  //3)set the password
   if (user.VerficationCodeExpiry < Date.now())
     return next(new AppError("token is expired", 400));
 
   user.verificationCode = undefined;
   user.VerficationCodeExpiry = undefined;
   user.verficationStatus = true;
-  //   await user.save();
-  // create new token for the user
+  //4)create new token for the user
   await user.save({ validateBeforeSave: false });
-
   createSendToken(user, 200, res);
 });
 
 exports.resendToken = catchAsync(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email || req.user.email });
+  //1)get the logged in user
+  const user = req.user;
   if (!user) {
     return next(new AppError("Please provide an correct email ", 404));
   }
 
+  //2)create new verfication code
   const resetToken = user.createVerficationOrResetToken(true);
   await user.save({ validateBeforeSave: false });
 
@@ -116,7 +116,6 @@ exports.resendToken = catchAsync(async (req, res, next) => {
 });
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
   // 1) Check if email and password exist
   if (!email || !password) {
     return next(new AppError("Please provide email and password!", 400));
@@ -218,34 +217,33 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashedToken,
     PasswordResetExpires: { $gte: Date.now() },
   });
-  //if no user is found
+  //2)if no user is found
   if (!user) {
     return next(new AppError("token is invaild", 400));
   }
-  //set the password
+  //3)set the password
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.PasswordResetExpires = undefined;
   await user.save();
-  // create new token for the user
+  //4) create new token for the user
   createSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  //update password when user is logged in
-  //get the user by user id
+  /*update password when user is logged in*/
+  //1)get the user by user id
   const user = await User.findById(req.user.id).select("+password");
   if (!user) return next(new AppError("user not found", 404));
-  //check if the old password is the same as the hashed
+  //2)check if the old password is the same as the hashed
   if (!(await user.correctPassword(req.body.currentPassword, user.password)))
     return next(new AppError("Incorrect  password", 401));
-  //if the password are the same set the new password
+  //3)if the password are the same set the new password
   user.password = req.body.newPassword;
   user.passwordConfirm = req.body.passwordConfirm;
-
   await user.save();
-  // create new token for the user
+  //4)create new token for the user
   createSendToken(user, 200, res);
 });
 

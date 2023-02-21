@@ -5,6 +5,7 @@ const Report = require("./../models/Report");
 const checkingService = require("./runningChecksController");
 
 exports.assignCheckData = (req, res, next) => {
+  //assign the logged in user to add it to check data
   if (!req.body.createdBy) req.body.createdBy = req.user.id;
   next();
 };
@@ -24,11 +25,9 @@ exports.createCheck = catchAsync(async (req, res, next) => {
     status: 200,
     availability: 0,
   });
-
   await report.save();
-
+  //pass it to the checking service
   checkingService.addToCheckList(check);
-  // cronService.start();
   res.status(201).json({
     status: "success",
     message: "the check is created",
