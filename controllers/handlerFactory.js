@@ -1,6 +1,10 @@
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
+const Check = require("../models/check");
+const ReportModel = require("../models/Report");
+const checkingService = require("./runningChecksController");
+
 const { query } = require("express");
 
 /*****************************************************************************/
@@ -20,6 +24,11 @@ exports.deleteOne = (Model, filters) =>
 
     if (!doc) {
       return next(new AppError("No document found with that ID", 404));
+    }
+
+    if (Model == Check) {
+      checkingService.removeFromCheckList(req.params.id);
+      await ReportModel.findOneAndDelete({ check: req.params.id });
     }
 
     res.status(204).json({
@@ -44,7 +53,10 @@ exports.updateOne = (Model, filters) =>
       new: true,
       runValidators: true,
     });
-
+    if (Model === Check) {
+      checkingService.removeFromCheckList(query);
+      checkingService.addToCheckList(doc);
+    }
     res.status(200).json({
       status: "success",
       data: {

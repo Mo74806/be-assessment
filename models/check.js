@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const UserModel = require("./user");
-const checkingService = require("../controllers/runningChecksController");
+// const checkingService = require("../controllers/runningChecksController");
 const ReportModel = require("./Report");
+
 const checkSchema = new mongoose.Schema(
   {
     name: {
@@ -88,19 +89,19 @@ checkSchema.pre("save", function (next) {
   });
 });
 
-checkSchema.pre("findByIdAndDelete", async function (next) {
-  const check = this;
-  checkingService.removeFromCheckList(check);
-  await ReportModel.findOneAndDelete({ check: this.id });
-  next();
-});
+// checkSchema.pre("findByIdAndDelete", async function (next) {
+//   const check = this;
+//   checkingService.removeFromCheckList(check);
+//   await ReportModel.findOneAndDelete({ check: this.id });
+//   next();
+// });
 
-checkSchema.pre("findByIdAndUpdate", async function (next) {
-  const check = this;
-  checkingService.removeFromCheckList(check);
-  checkingService.addToCheckList(check);
-  next();
-});
+// checkSchema.pre("findByIdAndUpdate", async function (next) {
+//   const check = this;
+//   checkingService.removeFromCheckList(check);
+//   checkingService.addToCheckList(check);
+//   next();
+// });
 
 /* make an index on user and check to prevent creating duplicate checks*/
 checkSchema.index({ createdBy: 1, name: 1 }, { unique: true });

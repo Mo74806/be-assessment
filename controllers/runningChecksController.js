@@ -130,8 +130,7 @@ class RunningChecksService {
   }
 
   async removeFromCheckList(check) {
-    this.checkingList[check._id].stop();
-    console.log(this.checkingList);
+    this.checkingList[check].stop();
   }
 }
 
