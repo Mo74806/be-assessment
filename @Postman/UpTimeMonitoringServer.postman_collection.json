@@ -10,8 +10,18 @@
 			"name": "Users",
 			"item": [
 				{
-					"name": "Get All Users Copy",
+					"name": "Get All Users",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -30,8 +40,18 @@
 					"response": []
 				},
 				{
-					"name": "Create User Copy",
+					"name": "Create User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -59,8 +79,18 @@
 					"response": []
 				},
 				{
-					"name": "Edit User Data Copy",
+					"name": "Edit User Data",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PATCH",
 						"header": [],
 						"body": {
@@ -89,8 +119,18 @@
 					"response": []
 				},
 				{
-					"name": "Get Single User Copy",
+					"name": "Get Single User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -110,8 +150,18 @@
 					"response": []
 				},
 				{
-					"name": "Delete User Copy",
+					"name": "Delete User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -131,7 +181,7 @@
 					"response": []
 				},
 				{
-					"name": "Sign Up New User Copy",
+					"name": "Sign Up New User",
 					"event": [
 						{
 							"listen": "test",
@@ -175,7 +225,7 @@
 					"response": []
 				},
 				{
-					"name": "Log In Existing User Copy",
+					"name": "Log In Existing User",
 					"event": [
 						{
 							"listen": "test",
@@ -218,7 +268,7 @@
 					"response": []
 				},
 				{
-					"name": "Logout Current User Copy",
+					"name": "Logout Current User",
 					"event": [
 						{
 							"listen": "test",
@@ -259,6 +309,71 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Verify An Account",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3030/api/v1/users/verify/b918a11756b00b9914e5aee4de3f74f81015da471e5a456eab3f995d77cee5cc",
+							"host": [
+								"localhost"
+							],
+							"port": "3030",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"verify",
+								"b918a11756b00b9914e5aee4de3f74f81015da471e5a456eab3f995d77cee5cc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Verification Code",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3030/api/v1/users/resendToken",
+							"host": [
+								"localhost"
+							],
+							"port": "3030",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"resendToken"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -266,7 +381,7 @@
 			"name": "Checks",
 			"item": [
 				{
-					"name": "Create Check Copy",
+					"name": "Create Check",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -305,7 +420,7 @@
 					"response": []
 				},
 				{
-					"name": "Get All Logged In User's Checks  Copy",
+					"name": "Get All Logged In User's Checks",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -335,7 +450,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Single Check  Copy",
+					"name": "Get Single Check",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -366,7 +481,7 @@
 					"response": []
 				},
 				{
-					"name": "Edit Check Copy",
+					"name": "Edit Check",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -406,7 +521,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete Check Copy",
+					"name": "Delete Check",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -442,7 +557,7 @@
 			"name": "Reports",
 			"item": [
 				{
-					"name": "Get Report About Specific Check Copy",
+					"name": "Get Report About Specific Check",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -472,7 +587,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Reports By Tags  Copy",
+					"name": "Get Reports By Tags",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},

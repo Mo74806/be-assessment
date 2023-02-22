@@ -103,7 +103,7 @@ exports.resendToken = catchAsync(async (req, res, next) => {
 
   //3)send email
   await sendEmail({
-    email: newUser.email,
+    email: user.email,
     subject: "confirmation code",
     message: `your reset code is:${resetToken}
       This code is valid for 10 Minutes from the time you recive this mail`,

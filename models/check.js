@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const UserModel = require("./user");
-const removeFromCheckList = require("../controllers/checkController");
-const addToCheckList = require("../controllers/checkController");
-
+const checkingService = require("../controllers/runningChecksController");
 const ReportModel = require("./Report");
 const checkSchema = new mongoose.Schema(
   {
@@ -92,15 +90,15 @@ checkSchema.pre("save", function (next) {
 
 checkSchema.pre("findByIdAndDelete", async function (next) {
   const check = this;
-  removeFromCheckList(check);
-  await ReportModel.findByIdAndDelete(this.id);
+  checkingService.removeFromCheckList(check);
+  await ReportModel.findOneAndDelete({ check: this.id });
   next();
 });
 
 checkSchema.pre("findByIdAndUpdate", async function (next) {
   const check = this;
-  removeFromCheckList(check);
-  addToCheckList(check);
+  checkingService.removeFromCheckList(check);
+  checkingService.addToCheckList(check);
   next();
 });
 
